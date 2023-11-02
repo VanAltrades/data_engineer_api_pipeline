@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="IZaMaNv83GGYVcbvc7Aa" name="Page-1">
-        <mxGraphModel dx="665" dy="1139" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="913" dy="1627" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -28,8 +28,8 @@
                 <mxCell id="7" value="&lt;h1&gt;Airflow DAG&lt;/h1&gt;&lt;p&gt;commodity_price_flow&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="430" y="525" width="190" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="&lt;h1&gt;Tasks&lt;/h1&gt;&lt;p&gt;get_yfinance_data&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;get_commodity_db&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; update_new_records&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;load_to_bq&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="820" y="525" width="190" height="145" as="geometry"/>
+                <mxCell id="8" value="&lt;h1&gt;Tasks&lt;/h1&gt;&lt;p&gt;generate_uuid (for unique csv storage)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;create_bucket (to store commodity data)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; pull_commodity_data_to_gcs&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;load_to_bq&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="525" width="240" height="145" as="geometry"/>
                 </mxCell>
                 <mxCell id="9" value="&lt;h1&gt;Airflow Location&lt;/h1&gt;&lt;p&gt;Google Cloud Storage&lt;/p&gt;&lt;p&gt;./commodity_price/dags/...&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="430" y="350" width="220" height="120" as="geometry"/>

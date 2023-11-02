@@ -1,3 +1,4 @@
+# adapted from...
 # https://medium.com/@amarachi.ogu/building-a-stock-data-workflow-with-google-cloud-composer-gcs-and-bigquery-9833c5c64313
 # https://github.com/AmaraOgu/Data-Engineering-Demo-Codes/blob/main/cloud-composer/dags/stock_data_dag.py
 from airflow import DAG
@@ -10,15 +11,20 @@ from datetime import timedelta
 import datetime as dt
 from airflow.utils.dates import days_ago
 import fnmatch
-import yfinance as yf
 from google.cloud import storage
 
-PROJECT_ID="project_id"
-STAGING_DATASET = "stock_dataset"
+# add below dependencies to cloud composer's environment
+# via ui or...
+# $ gcloud composer environments update {demo-environment} --location us-central1 --update-pypi-package yfinance>=0.2.31
+import yfinance as yf
+
+PROJECT_ID="e-commerce-demo-v"
+STAGING_DATASET = "dag_examples"
+TABLE = "commodity_prices_wt"
 LOCATION = "us-central1"
 
 default_args = {
-    'owner': 'Amara',
+    'owner': 'VanAltrades',
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
@@ -29,18 +35,28 @@ default_args = {
 
 def get_data():
     # Tickers list for data extraction from yahoo finance
-    tickers = ['MSFT','AMZN','GOOGL']
+    tickers = ['BZ', 'EB', 'NG']
 
-    # Set start and end dates
+    # Set start and end date ranges
     today = dt.datetime.now()
-    start = dt.datetime(2023, 1, 1,)
+    start = dt.datetime(2022, 1, 1,)
     end = dt.date(today.year, today.month, today.day)
 
     # API call to download data from yahoo finance
-    data = yf.download(tickers=tickers, start=start, end=end, interval='1d',)['Adj Close']
-    
+    d = yf.download(tickers=tickers, start=start, end=end, interval='1d',)
+
+    # format multi-column index dataframe to single column row
+    data = d.stack(level=1)
+    data = data.reset_index()
+
+    # format table
+    data.columns = ['Date','Ticker','Adj_Close', 'Close', 'High', 'Low', 'Open', 'Volume'] # rename columns to follow BigQuery specs
+    data = data.dropna(subset=['Adj_Close', 'Close', 'High', 'Low', 'Open', 'Volume'], how="all") # drop na records
+    data = data.sort_values(by="Date",ascending=False) # sort by date desc per preference
+    data = data[['Date','Ticker','Adj_Close', 'Close', 'High', 'Low', 'Open', 'Volume']]
+
     # Convert the data to CSV and encode 
-    data = data.to_csv(index=True).encode()
+    data = data.to_csv(index=False).encode()
 
     # Create a storage client
     storage_client = storage.Client()
@@ -49,19 +65,20 @@ def get_data():
     buckets = list(storage_client.list_buckets())
 
     # Filter the list of buckets to only include those with the desired prefix
-    buckets_with_prefix = [bucket for bucket in buckets if fnmatch.fnmatch(bucket.name, 'the_demo_*')]
+    buckets_with_prefix = [bucket for bucket in buckets if fnmatch.fnmatch(bucket.name, 'tmp_commodity_*')]
 
     #Choose the matching buckets to upload the data to
     bucket = buckets_with_prefix[0]
 
     # Upload the data to the selected bucket
-    blob = bucket.blob('stock_data.csv')
+    blob = bucket.blob('commodity_data.csv')
     blob.upload_from_string(data)
-    print(f"data sucessfully uploadesd to {bucket}")
+    print(f"data sucessfully uploaded to {bucket}")
 
-with DAG('Stock_data',
+with DAG('commodity_write_truncate',
          start_date=days_ago(1), 
          schedule_interval="@once",
+        #  schedule='5 4 * * *', # run daily at 7 pm
          catchup=False, 
          default_args=default_args, 
          tags=["gcs", "bq"]
@@ -69,34 +86,38 @@ with DAG('Stock_data',
 
     generate_uuid = PythonOperator(
             task_id="generate_uuid", 
-            python_callable=lambda: "the_demo_" + str(uuid.uuid4()),
+            python_callable=lambda: "tmp_commodity_" + str(uuid.uuid4()),
         )
 
     create_bucket = GCSCreateBucketOperator(
             task_id="create_bucket",
-            bucket_name="{{ task_instance.xcom_pull('generate_uuid') }}",
+            bucket_name="{{ task_instance.xcom_pull('generate_uuid') }}", # https://airflow.apache.org/docs/apache-airflow/stable/core-concepts/xcoms.html
             project_id=PROJECT_ID,
         )
 
-    pull_stock_data_to_gcs = PythonOperator(
-        task_id = 'pull_stock_data_to_gcs',
+    pull_commodity_data_to_gcs = PythonOperator(
+        task_id = 'pull_commodity_data_to_gcs',
         python_callable = get_data,
         )
 
     load_to_bq = GCSToBigQueryOperator(
         task_id = 'load_to_bq',
         bucket = "{{ task_instance.xcom_pull('generate_uuid') }}",
-        source_objects = ['stock_data.csv'],
-        destination_project_dataset_table = f'{PROJECT_ID}:{STAGING_DATASET}.stock_data_table',
+        source_objects = ['commodity_data.csv'],
+        destination_project_dataset_table = f'{PROJECT_ID}:{STAGING_DATASET}.{TABLE}',
         write_disposition='WRITE_TRUNCATE',
         source_format = 'csv',
         allow_quoted_newlines = 'true',
         skip_leading_rows = 1,
         schema_fields=[
-        {'name': 'Date', 'type': 'DATE', 'mode': 'NULLABLE'},
-        {'name': 'AMZN', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
-        {'name': 'GOOGL', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
-        {'name': 'MSFT', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
+            {'name': 'Date', 'type': 'DATE', 'mode': 'NULLABLE'},
+            {'name': 'Ticker', 'type': 'STRING', 'mode': 'NULLABLE'},
+            {'name': 'Adj_Close', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
+            {'name': 'Close', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
+            {'name': 'High', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
+            {'name': 'Low', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
+            {'name': 'Open', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
+            {'name': 'Volume', 'type': 'FLOAT64', 'mode': 'NULLABLE'},
             ],
         )
     
@@ -108,7 +129,7 @@ with DAG('Stock_data',
     (
         generate_uuid
         >> create_bucket
-        >> pull_stock_data_to_gcs
+        >> pull_commodity_data_to_gcs
         >> load_to_bq
         >> delete_bucket
     )
