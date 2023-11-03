@@ -4,32 +4,86 @@
 
 Analysts rarely feel satisfied with their reporting suite or available data.
 
-All too often, analysts will ideate on ways to improve 
+All too often, analysts will brainstorm ways to improve data quality and bring external data into their data warehouse for advanced analysis or ideation.
 
-# 2 Examples (Truncate/Append)
+However, when companies like Google or Bloomberg do not provide an automated data integration into your data warehouse, the task of ingesting new data sources seems too complex to complete as an analyst.
+
+That's because the job of orchestrating data movement from external sources towards internal datasets falls under the domain expertise of Data Engineers.
+
+Data Engineers play a key role in unlocking novel and creative insights for analysts. But for analysts to leverage new data, they must have a close relationship to Data Engineers, prioritize and explain value in request tickets, and even then, analysts may have to wait weeks for any of their requested data to appear in production.
+
+This article will explain and demonstrate exactly how Data Engineers use Google's cloud managed Cloud Composer service to ingest data from an API, format the data to specifications, load the data to a BigQuery database table, and schedule the process to run daily.
+
+By reading and applying this article's lessons, analysts will be introduced to a world of possibility. Analysts will learn how orchestrating Python functions and Airflow operators can remove years of work from their backlog while relying upon automated processing.
+
+The Scenario:
+
+Imagine you are an analyst at a commodities trading firm. You and your team have been manually downloading commodity prices from a website and performing technical analysis to identify buy and sell signals. After hours of redoing tasks like downloading csvs, appending csv data to a spreadsheet, writing spreadsheet functions, and dealing with several 'sources of truth' from different team members, you think there has to be a more automated and efficient way to accomplish this work. 
+
+You've spoken with the firm's Data Engineering team and they explain that they use a cloud managed Airflow instance on GCP to orchestrate data ingestion. They mention a first step would be to ingest the data but incorporating the technical analysis algorithm will take longer to review and deploy. But their backlog of tickets extends 3 months and you want this automated now. 
+
+You chose to tackle this first data ingestion task yourself, to save yourself time and learn new and beneficial skills to build upon.
+
+![airflow idea flow chart](image-9.png)
+
+Key Objective:
+
+Deploy an Airflow data API ingestion DAG (directed acyclic graph) to Google Cloud Platform that loads commodity prices to a BigQuery database.
+
+Primary Benefit:
+
+Learn the basics of Airflow orchestration to schedule automated data ingestion tasks.
+
+Secondary Benefit:
+
+Introduction to Airflow operators that will allow you to deploy orchestrated algorithmic tasks in the future.
 
 ## Repository Structure
 
-* create_bq_historic_table
+This repository does not act as a Python package. Instead, it acts as a reference for storing your DAG code that will be uploaded to Google's Cloud Composer. Development Operations (DevOps) specializes in deploying code to production and requires more expertise. For now, understand that this example demonstrates a functional approach, but managing a deployable code base would be required to scale ingestion operations efficiently.
 
-* /dags + drawio
+```
+data_engineer_api_pipeline
+│   .gitattributes
+│   .gitignore
+│   LICENSE
+│
+└───src
+    ├───commodity_prices
+    │   │   create_bq_historic_table.py
+    │   │   __init__.py
+    │   │
+    │   └───dags
+    │           dag_commodity_write_truncate.drawio
+    │           dag_commodity_write_truncate.py
+    │           __init__.py
+    └───utils
+            gcp_utils.py
+            __init__.py
+```
+
+Because the idea is to create a commodity price ingestion script, within the `/src` folder, I included a subdirectory called `/commodity_prices`. In this article, one DAG will be covered, but there will inevitably be room to add more, so I have created a folder where `/dags` can be stored.
+
+Within the `/dags` folder exists Python files that will be uploaded to Cloud Composer as well as `.drawio` flow chart files to visually illustrate the process of each DAG. Visualizing the scopes, process, and tasks that should occur in a scheduled script is always a good idea.
+
+In the event a csv with historic information and formatting is provided, I have included a `create_bq_historic_table.py` file that can be run to upload the data to BigQuery. That process will not be covered, but is available for reference.
+
+## From Idea to Implementation: Walking Through the Script's Process
+
+You want your process to cover the folling scopes:
+
+* dimensions: dates and commodity tickers
+    * date range: 2022-01-01 thru today's date
+    * commodity tickers: Soybeans (ZS), Brent Crude Oil (EB), and Natural Gas (NG)
+* metrics: prices and volume
+    * 'Adj_Close', 'Close', 'High', 'Low', 'Open', 'Volume'
+
+You want to accomplish the following tasks in the following order:
+
+1. Collect historic commodity prices for the commodities in scope
+2. 
 
 ## Configuring a GCP Project For Cloud Composer (Airflow)
-
-## GCP Services and Directory Overview
-
-* Cloud Composer
-
-* Google Cloud Storage
-    * DAGs folder
-    * tmp folders
-
-## Example #1: Creating from scratch
-
-## Example #2: Loading Historic Data and Appending new data
-
-
-
 
 ![enable api](image.png)
 
@@ -40,6 +94,21 @@ All too often, analysts will ideate on ways to improve
 ![airflow dag bucket that was created](image-3.png)
 
 ![pypi yfinance package requirement](image-4.png)
+
+## GCP Services and Directory Overview
+
+* Cloud Composer
+
+* Google Cloud Storage
+    * DAGs folder
+    * tmp folders
+
+
+
+
+
+
+
 
 ## WRITE TRUNCATE
 

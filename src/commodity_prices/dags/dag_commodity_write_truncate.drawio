@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="IZaMaNv83GGYVcbvc7Aa" name="Page-1">
-        <mxGraphModel dx="408" dy="604" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="1221" dy="768" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -61,7 +61,7 @@
                 <mxCell id="19" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://cdn.icon-icons.com/icons2/2699/PNG/512/google_bigquery_logo_icon_168150.png;" parent="1" vertex="1">
                     <mxGeometry x="667.9999999999999" y="700" width="82" height="82" as="geometry"/>
                 </mxCell>
-                <mxCell id="21" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#00FF00;" vertex="1" parent="1">
+                <mxCell id="21" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#00FF00;" parent="1" vertex="1">
                     <mxGeometry x="839.42" y="678" width="20" height="20" as="geometry"/>
                 </mxCell>
             </root>
