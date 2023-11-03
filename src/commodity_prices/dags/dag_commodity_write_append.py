@@ -137,16 +137,29 @@ def extract_from_yfinance():
 
 # Define a function to identify unique records between two DataFrames
 def identify_unique_records(task_instance, **kwargs):
+
+    # Create a storage client
+    storage_client = storage.Client()
+
+    # Get a list of all buckets
+    buckets = list(storage_client.list_buckets())
+
+    # Filter the list of buckets to only include those with the desired prefix
+    buckets_with_prefix = [bucket for bucket in buckets if fnmatch.fnmatch(bucket.name, 'tmp_commodity_*')]
+
+    #Choose the matching buckets to upload the data to
+    bucket = buckets_with_prefix[0]
+
     with tempfile.TemporaryDirectory() as temp_dir:
         # Use the temporary directory to store the downloaded files
-        local_file_path1 = f'{temp_dir}/file1.csv'
-        local_file_path2 = f'{temp_dir}/file2.csv'
+        local_file_path1 = f'{temp_dir}/commodity_data_existing_bq.csv'
+        local_file_path2 = f'{temp_dir}/commodity_data_new_yfinance.csv'
 
         # Download CSV files from GCS to the temporary directory
         download_file1 = GoogleCloudStorageToCsvFileOperator(
             task_id='download_file1',
-            bucket_name='your-gcs-bucket',
-            object_name='file1.csv',
+            bucket_name=bucket,
+            object_name='commodity_data_existing_bq.csv',
             local_file_path=local_file_path1,
             google_cloud_storage_conn_id='google_cloud_default',
             dag=dag,
@@ -154,8 +167,8 @@ def identify_unique_records(task_instance, **kwargs):
 
         download_file2 = GoogleCloudStorageToCsvFileOperator(
             task_id='download_file2',
-            bucket_name='your-gcs-bucket',
-            object_name='file2.csv',
+            bucket_name=bucket,
+            object_name='commodity_data_new_yfinance.csv',
             local_file_path=local_file_path2,
             google_cloud_storage_conn_id='google_cloud_default',
             dag=dag,
@@ -173,22 +186,28 @@ def identify_unique_records(task_instance, **kwargs):
         unique_records = pd.concat([file1, file2]).drop_duplicates(keep=False)
 
         # Save unique_records to a new CSV file in the temporary directory
-        unique_records_file_path = f'{temp_dir}/unique_records.csv'
-        unique_records.to_csv(unique_records_file_path, index=False)
+        # unique_records_file_path = f'{temp_dir}/unique_records.csv'
+        # unique_records.to_csv(unique_records_file_path, index=False).encode()
+        unique_records = unique_records.to_csv(index=False).encode()
 
-        # Upload unique_records to GCS
-        upload_to_gcs = LocalFileToGcsOperator(
-            task_id='upload_to_gcs',
-            src=unique_records_file_path,
-            dst='your-gcs-bucket/destination-path/unique_records.csv',
-            bucket_name='your-gcs-bucket',
-            google_cloud_storage_conn_id='google_cloud_default',
-            mime_type='application/octet-stream',  # Adjust the MIME type as needed
-            dag=dag,
-        )
+        # # Upload unique_records to GCS
+        # upload_to_gcs = LocalFileToGcsOperator(
+        #     task_id='upload_to_gcs',
+        #     src=unique_records_file_path,
+        #     dst='your-gcs-bucket/destination-path/unique_records.csv',
+        #     bucket_name='your-gcs-bucket',
+        #     google_cloud_storage_conn_id='google_cloud_default',
+        #     mime_type='application/octet-stream',  # Adjust the MIME type as needed
+        #     dag=dag,
+        # )
 
-        # Set up the task dependencies
-        upload_to_gcs >> upload_to_gcs
+        # # Set up the task dependencies
+        # upload_to_gcs >> upload_to_gcs
+
+        # Upload the data to the selected bucket
+        blob = bucket.blob('commodity_data_new.csv')
+        blob.upload_from_string(unique_records)
+        print(f"data sucessfully uploaded to {bucket}")
 
 
 # def save_new_records_to_gcs(task_instance):
@@ -281,9 +300,9 @@ with DAG('commodity_write_append',
     load_to_bq = GCSToBigQueryOperator(
         task_id = 'load_to_bq',
         bucket = "{{ task_instance.xcom_pull('generate_uuid') }}",
-        source_objects = ['commodity_data_append.csv'],
+        source_objects = ['commodity_data_new.csv'],
         destination_project_dataset_table = f'{PROJECT_ID}:{STAGING_DATASET}.{TABLE}',
-        write_disposition='WRITE_APPEND',
+        write_disposition='WRITE_APPEND', # We are appending to an existing database in this example
         source_format = 'csv',
         allow_quoted_newlines = 'true',
         skip_leading_rows = 1,
@@ -306,11 +325,11 @@ with DAG('commodity_write_append',
 
     (
         extract_from_db_task
-        >> extract_from_yfinance_task
-        >> identify_new_records_task
         >> generate_uuid
         >> create_bucket
-        >> save_new_records_to_gcs_task
+        >> extract_from_db_task
+        >> extract_from_yfinance_task
+        >> identify_unique
         >> load_to_bq
         >> delete_bucket
     )

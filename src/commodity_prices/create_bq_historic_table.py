@@ -1,5 +1,5 @@
 # $ cd "directory/above/data_engineer_api"
-# $ python -m data_engineer_api_pipeline.src.commodity_prices.setup_bq
+# $ python -m data_engineer_api_pipeline.src.commodity_prices.create_bq_historic_table
 
 import yfinance as yf
 from ..utils.gcp_utils import client, bigquery

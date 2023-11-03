@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="IZaMaNv83GGYVcbvc7Aa" name="Page-1">
-        <mxGraphModel dx="913" dy="1627" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="408" dy="604" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1100" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -25,16 +25,16 @@
                 <mxCell id="6" value="&lt;h1&gt;Scopes&lt;/h1&gt;&lt;p&gt;Data Source: Yahoo Finance API&lt;/p&gt;&lt;p&gt;Data Format: Structured table data, Time-Series&lt;br&gt;&lt;/p&gt;&lt;p&gt;Data Dimensions: Commodity Tickers&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;* Soybeans (ZS)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;* Brent Crude (EB)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;* Natural Gas (NG)&lt;/p&gt;&lt;p&gt;Data Metrics: Price&lt;/p&gt;&lt;p&gt;Schedule: Daily - close prices&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="10" y="190" width="230" height="290" as="geometry"/>
                 </mxCell>
-                <mxCell id="7" value="&lt;h1&gt;Airflow DAG&lt;/h1&gt;&lt;p&gt;commodity_price_flow&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="430" y="525" width="190" height="120" as="geometry"/>
+                <mxCell id="7" value="&lt;h1&gt;Airflow DAG&lt;/h1&gt;&lt;p&gt;commodity_write_truncate&lt;/p&gt;&lt;p&gt;&lt;b&gt;&lt;br&gt;&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;Functions:&lt;/b&gt;&lt;/p&gt;&lt;p&gt;&lt;b&gt;get_data()&lt;/b&gt;&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="430" y="525" width="190" height="185" as="geometry"/>
                 </mxCell>
-                <mxCell id="8" value="&lt;h1&gt;Tasks&lt;/h1&gt;&lt;p&gt;generate_uuid (for unique csv storage)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;create_bucket (to store commodity data)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; pull_commodity_data_to_gcs&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;load_to_bq&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
-                    <mxGeometry x="820" y="525" width="240" height="145" as="geometry"/>
+                <mxCell id="8" value="&lt;h1&gt;Tasks&lt;/h1&gt;&lt;p&gt;generate_uuid (for unique csv storage)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp;create_bucket (to store commodity data)&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; pull_commodity_data_to_gcs&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp;load_to_bq&lt;/p&gt;&lt;p&gt;&amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; &amp;nbsp; delete_bucket&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                    <mxGeometry x="820" y="525" width="240" height="185" as="geometry"/>
                 </mxCell>
-                <mxCell id="9" value="&lt;h1&gt;Airflow Location&lt;/h1&gt;&lt;p&gt;Google Cloud Storage&lt;/p&gt;&lt;p&gt;./commodity_price/dags/...&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                <mxCell id="9" value="&lt;h1&gt;Airflow Location&lt;/h1&gt;&lt;p&gt;Google Cloud Storage:&lt;/p&gt;&lt;p&gt;buckets/us-central-1-van-environment-uuid-bucket/dags&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="430" y="350" width="220" height="120" as="geometry"/>
                 </mxCell>
-                <mxCell id="10" value="&lt;h1&gt;Database Location&lt;/h1&gt;&lt;p&gt;Google BigQuery table&lt;/p&gt;&lt;p&gt;{project}.{dataset}.{table}&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                <mxCell id="10" value="&lt;h1&gt;Database Location&lt;/h1&gt;&lt;p&gt;Google BigQuery table&lt;/p&gt;&lt;p&gt;e-commerce-demo-v.dag_examples.commodity_prices_wt&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="430" y="190" width="230" height="120" as="geometry"/>
                 </mxCell>
                 <mxCell id="15" style="edgeStyle=none;html=1;exitX=1;exitY=1;exitDx=0;exitDy=0;entryX=0.5;entryY=0;entryDx=0;entryDy=0;" parent="1" source="11" target="12" edge="1">
@@ -60,6 +60,9 @@
                 </mxCell>
                 <mxCell id="19" value="" style="shape=image;verticalLabelPosition=bottom;labelBackgroundColor=default;verticalAlign=top;aspect=fixed;imageAspect=0;image=https://cdn.icon-icons.com/icons2/2699/PNG/512/google_bigquery_logo_icon_168150.png;" parent="1" vertex="1">
                     <mxGeometry x="667.9999999999999" y="700" width="82" height="82" as="geometry"/>
+                </mxCell>
+                <mxCell id="21" value="" style="ellipse;whiteSpace=wrap;html=1;aspect=fixed;strokeColor=#00FF00;" vertex="1" parent="1">
+                    <mxGeometry x="839.42" y="678" width="20" height="20" as="geometry"/>
                 </mxCell>
             </root>
         </mxGraphModel>

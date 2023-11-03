@@ -1,3 +1,36 @@
+# data_engineer_api_pipeline
+
+## Orchestrating API Data Into BigQuery Using Airflow [The Analyst's Guide to Data Engineering]
+
+Analysts rarely feel satisfied with their reporting suite or available data.
+
+All too often, analysts will ideate on ways to improve 
+
+# 2 Examples (Truncate/Append)
+
+## Repository Structure
+
+* create_bq_historic_table
+
+* /dags + drawio
+
+## Configuring a GCP Project For Cloud Composer (Airflow)
+
+## GCP Services and Directory Overview
+
+* Cloud Composer
+
+* Google Cloud Storage
+    * DAGs folder
+    * tmp folders
+
+## Example #1: Creating from scratch
+
+## Example #2: Loading Historic Data and Appending new data
+
+
+
+
 ![enable api](image.png)
 
 ![new composer env](image-1.png)
