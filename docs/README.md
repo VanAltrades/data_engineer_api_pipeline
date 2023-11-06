@@ -116,6 +116,16 @@ You want to accomplish the following tasks in the following order:
 
 ![write truncate dag running](image-6.png)
 
+![truncate dag run success](image-18.png)
+
+![dag graph](image-19.png)
+
+![bigquery table schema](image-17.png)
+
+![table data](image-20.png)
+
+![no duplicate value check](image-21.png)
+
 ## WRITE APPEND
 
 "analyst handed you a csv of historic data scenario" - backfill data by running `$ python -m data_engineer_api_pipeline.src.commodity_prices.setup_bq`
@@ -124,3 +134,27 @@ You want to accomplish the following tasks in the following order:
 
 ![pre dag run table](image-8.png)
 
+![gcs csvs](image-10.png)
+
+![success run](image-11.png)
+
+![dag graph](image-12.png)
+
+![bigquery updated](image-13.png)
+
+![bigquery table looks updated](image-14.png)
+
+![table has duplicate records proof](image-16.png)
+
+![duplicate records](image-15.png)
+
+So where to from here...
+Read and understand how to optimize your DAG by reading articles and documentation, then edit the dag(long-term).
+
+Places to start...
+2. run sql script that removes duplicates from the `commodity_prices` table as another task in the existing dag (more processing?).
+3. modify the `identify_unique_records` task if the drop_duplicates python method is not working as expected.
+4. confirm the `write_disposition='WRITE_APPEND'` argument of the BigQuery operator is correct.
+5. Consider a new design, not deleting your GCS bucket would be a good start. If the bucket is left, you could explore it's csv files to check for duplicates there. 
+6. confirm the original csv did not contain duplicates prior to inclusion in BigQuery.
+7. If other successful dags run as expected, reference their file to identify solutions from prior work.
