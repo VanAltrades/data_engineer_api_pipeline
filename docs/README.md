@@ -2,6 +2,8 @@
 
 ## Orchestrating API Data Into BigQuery Using Airflow [The Analyst's Guide to Data Engineering]
 
+[Medium Article](https://medium.com/@vanaltrades/orchestrating-api-data-into-bigquery-using-airflow-the-analysts-guide-to-data-engineering-0bd6733b5d91)
+
 Analysts rarely feel satisfied with their reporting suite or available data.
 
 All too often, analysts will brainstorm ways to improve data quality and bring external data into their data warehouse for advanced analysis or ideation.
