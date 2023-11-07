@@ -39,6 +39,8 @@ default_args = {
 
 def extract_from_database():
 
+    # consider BigQueryGetDataOperator as alternative
+
     query_job=client.query("SELECT * FROM `e-commerce-demo-v.dag_examples.commodity_prices`") 
     results = query_job.result()
     df = results.to_dataframe()
@@ -180,7 +182,7 @@ with DAG('commodity_write_append',
         python_callable=extract_from_yfinance,
     )
 
-    # Define the task to identify unique records
+    # 5. Define the task to identify unique records
     identify_unique = PythonOperator(
         task_id='identify_unique_records',
         python_callable=identify_unique_records,
@@ -188,7 +190,7 @@ with DAG('commodity_write_append',
         dag=dag,
     )
 
-    # 7. Load new records to GBQ
+    # 6. Load new records to GBQ
     load_to_bq = GCSToBigQueryOperator(
         task_id = 'load_to_bq',
         bucket = "{{ task_instance.xcom_pull('generate_uuid') }}",
@@ -210,6 +212,7 @@ with DAG('commodity_write_append',
             ],
         )
     
+    # 7: delete temp bucket
     delete_bucket = GCSDeleteBucketOperator(
             task_id="delete_bucket",
             bucket_name="{{ task_instance.xcom_pull('generate_uuid') }}",
