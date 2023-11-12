@@ -1,4 +1,7 @@
 # Build a Databricks API Pipeline that Loads Data to BigQuery on GCP
+
+[Medium Article](https://medium.com/@vanaltrades/build-a-databricks-api-pipeline-that-loads-data-to-bigquery-on-gcp-the-analysts-guide-to-data-ae828d3b824c)
+
 ## All your data, analytics and AI on one Lakehouse platform
 
 In a previous [article](https://medium.com/@vanaltrades/orchestrating-api-data-into-bigquery-using-airflow-the-analysts-guide-to-data-engineering-0bd6733b5d91?source=your_stories_page-------------------------------------), I explained how to use cloud managed Apache Airflow to extract, transform and load data from yFinance's API response to a BigQuery table.
