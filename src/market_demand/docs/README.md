@@ -1,4 +1,23 @@
+# Detect Market Demand Anomalies and Schedule Alert Emails with Databricks
+
+## Extending Databricks notebooks for anomaly detection.
+
+**Key Objective:**
+
+
+
+**Primary Benefit:**
+
+
+
+**Secondary Benefits:**
+
+
+
+![demand anomaly alert flow](image-13.png)
+
 Steps to Send Email Notifications in Databricks:
+
 
 **Set Up an Email Service:**
 

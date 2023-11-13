@@ -30,3 +30,9 @@
 * `data_engineer_api_pipeline\src\commodity_prices\databricks\write_truncate.py`
 
 ![overwrite process](.\src\commodity_prices\databricks\docs\image-14.png)
+
+### Example of Databricks Anomaly Detection Alert Email
+
+* `data_engineer_api_pipeline\src\market_demand\databricks\market_demand_alert.ipynb`
+
+![demand anomaly alert flow](.\src\market_demand\docs\image-13.png)
