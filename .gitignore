@@ -2,3 +2,4 @@ gcp_service_account.json
 news_api_key.json
 __pycache__/
 TODO/
+sendgrid.env
