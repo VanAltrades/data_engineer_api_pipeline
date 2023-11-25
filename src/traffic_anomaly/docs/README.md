@@ -16,9 +16,11 @@
 
 Outfit your organization with daily anomaly detection alerts based on internal database data.
 
-**Primary Benefit:**
+**Primary Benefits:**
 
 Learn Aiflow features including XCOMs, PythonOperators, ShortCircuitOperators, PythonBranchOperators and looping through variable task dependencies.
+
+Build and understand implementing multiple anomaly algorithms into an Aiflow script.
 
 **Secondary Benefits:**
 
