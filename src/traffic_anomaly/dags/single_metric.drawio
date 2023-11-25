@@ -1,16 +1,16 @@
 <mxfile host="65bd71144e">
     <diagram id="yQ1NKh-PU761OOfQEgjS" name="Page-1">
-        <mxGraphModel dx="650" dy="719" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="1515" dy="1134" grid="0" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
                 <mxCell id="2" value="SQL" style="shape=cylinder3;whiteSpace=wrap;html=1;boundedLbl=1;backgroundOutline=1;size=15;" parent="1" vertex="1">
                     <mxGeometry x="175" y="442" width="90" height="80" as="geometry"/>
                 </mxCell>
-                <mxCell id="3" value="&lt;h1&gt;Script Variables&lt;/h1&gt;&lt;p&gt;SQL: Data from BigQuery SQL&lt;/p&gt;&lt;p&gt;BUCKET_ANOMALY: GCS Bucket to store anomaly images and html&lt;/p&gt;&lt;p&gt;DATE_NAME: date column from SQL&lt;/p&gt;&lt;p&gt;DATE_METRIC: metric column from SQL&lt;/p&gt;&lt;p&gt;THRESHOLD: daily metric quantile floor float value&lt;/p&gt;&lt;p&gt;CHART_TITLE: title of vizualization&lt;/p&gt;&lt;p&gt;ANOMALY_IMAGE_NAME: day/type name of anomaly. Used to title png and html files.&lt;/p&gt;&lt;p&gt;EMAIL_SUBJECT: Subject in emailed alert.&lt;/p&gt;&lt;p&gt;IMG_PATH = Path to png in GCS. This will attach to Slack email.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontStyle=0" parent="1" vertex="1">
+                <mxCell id="3" value="&lt;h1&gt;Script Variables&lt;/h1&gt;&lt;p&gt;SQL: Data from BigQuery SQL&lt;/p&gt;&lt;p&gt;BUCKET_ANOMALY: GCS Bucket to store anomaly images and html&lt;/p&gt;&lt;p&gt;DATE_NAME: date column from SQL&lt;/p&gt;&lt;p&gt;METRIC: metric column from SQL&lt;/p&gt;&lt;p&gt;THRESHOLD: daily metric quantile floor float value&lt;/p&gt;&lt;p&gt;CHART_TITLE: title of vizualization&lt;/p&gt;&lt;p&gt;ANOMALY_IMAGE_NAME: day/type name of anomaly. Used to title png and html files.&lt;/p&gt;&lt;p&gt;EMAIL_SUBJECT: Subject in emailed alert.&lt;/p&gt;&lt;p&gt;IMG_PATH = Path to png in GCS. This will attach to Slack email.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;fontStyle=0" parent="1" vertex="1">
                     <mxGeometry x="990" y="20" width="290" height="380" as="geometry"/>
                 </mxCell>
-                <mxCell id="5" value="&lt;h1&gt;Single Metric Anomaly Alert&lt;/h1&gt;&lt;p&gt;Input: Daily metric data from BigQuery.&lt;/p&gt;&lt;p&gt;Condition: If daily metric outside day's Std. Dev. bounds, then anomaly exists.&lt;/p&gt;&lt;p&gt;Output: Email email with trend image attachment.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
+                <mxCell id="5" value="&lt;h1&gt;Single Metric Anomaly Alert&lt;/h1&gt;&lt;p&gt;Input: Daily metric data from BigQuery.&lt;/p&gt;&lt;p&gt;Condition: If daily metric outside day's quantile bounds, then anomaly exists.&lt;/p&gt;&lt;p&gt;Output: Email email with trend image attachment.&lt;/p&gt;" style="text;html=1;strokeColor=none;fillColor=none;spacing=5;spacingTop=-20;whiteSpace=wrap;overflow=hidden;rounded=0;" parent="1" vertex="1">
                     <mxGeometry x="25" y="20" width="315" height="180" as="geometry"/>
                 </mxCell>
                 <mxCell id="19" value="" style="edgeStyle=none;html=1;" parent="1" source="6" target="7" edge="1">

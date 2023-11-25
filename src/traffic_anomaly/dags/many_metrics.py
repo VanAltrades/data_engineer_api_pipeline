@@ -25,7 +25,7 @@ ANOM_EMAIL_FROM_PW = os.environ.get("ANOM_EMAIL_FROM_PW")
 # PRODUCTION
 ANOM_EMAIL_TO = os.environ.get("ANOM_EMAIL_TO")
 
-BUCKET_ANOMALY = 'anomaly_visualizations'
+BUCKET_ANOMALY = 'anom_visualizations'
 
 DATE_NAME = "date"
 METRICS = ["visits","transactions","revenue"]
@@ -48,11 +48,11 @@ default_args = {
 }
 
 SQL = """
-      SELECT date_month, sum(visits) visits, sum(transactions) transactions, sum(revenue) revenue 
+      SELECT cast(date as STRING) as date, sum(visits) visits, sum(transactions) transactions, sum(revenue) revenue 
       FROM `e-commerce-demo-v.summary.s_ga_organic`
       WHERE date < "2017-12-31"
-      GROUP BY 1,2
-      ORDER BY 1 ASC
+      GROUP BY 1
+      ORDER BY 1 DESC
     """
 
 with DAG(DAG_NAME,
@@ -74,7 +74,7 @@ with DAG(DAG_NAME,
       result = bigquery_hook.get_pandas_df(sql=SQL, dialect='standard')
       
       # Push the data to XCom
-      kwargs['ti'].xcom_push(key='bq_data_key', value=result)
+      kwargs['ti'].xcom_push(key='bq_data_key', value=result.to_dict(orient='index'))
 
   t1 = PythonOperator(
       task_id='t1_get_data_from_bq',
@@ -87,24 +87,31 @@ with DAG(DAG_NAME,
 
     ti = kwargs['ti']
     bq_data = ti.xcom_pull(task_ids='t1_get_data_from_bq', key='bq_data_key')
-    
+    bq_data = pd.DataFrame.from_dict(bq_data, orient='index')
 
     data = bq_data[[DATE_NAME,metric]].copy()
     data[DATE_NAME] = pd.to_datetime(data[DATE_NAME], errors='coerce')
     # add name of day column
     data.loc[:,'day_name'] = data[DATE_NAME].dt.day_name()
+    # Replace NaN metrics with 0
+    data = data.fillna(0)
     data[metric] = data[metric].astype('int64')
+
+    # Convert datetime values to strings for xcom
+    data[DATE_NAME] = data[DATE_NAME].dt.strftime('%Y-%m-%d')
+    
     # set timestamp to index
     data.set_index(DATE_NAME, drop=True, inplace=True)
     
     print(data.head())
     
-    kwargs['ti'].xcom_push(key=f'data_formated_key_{metric}', value=data)
+    kwargs['ti'].xcom_push(key=f'data_formated_key_{metric}', value=data.to_dict(orient='index'))
 
   def classify_anomaly(metric, **kwargs):
     
     ti = kwargs['ti']
     data = ti.xcom_pull(task_ids=f't2_format_data_for_metric_{metric}', key=f'data_formated_key_{metric}')
+    data = pd.DataFrame.from_dict(data, orient='index')
 
     data['day_mean'] = data.groupby('day_name')[metric].transform(lambda x: x.mean())
     data['day_stdev'] = data.groupby('day_name')[metric].transform(lambda x: x.std() * STDEV_THRESHOLD)
@@ -113,17 +120,17 @@ with DAG(DAG_NAME,
 
     data['anomaly_low'] = data[metric] < data['day_floor']
     data['anomaly_high'] = data[metric] > data['day_ceiling']
-    
-    # Replace NaN metrics with 0
+  
     data_anomaly = data.fillna(0)
     
     print(data_anomaly.head()) # LOG
-    kwargs['ti'].xcom_push(key=f'data_anomaly_key_{metric}', value=data_anomaly)
+    kwargs['ti'].xcom_push(key=f'data_anomaly_key_{metric}', value=data_anomaly.to_dict(orient='index'))
 
   def day_is_anomaly_branch(metric, **kwargs):
 
     ti = kwargs['ti']
     data = ti.xcom_pull(task_ids=f't3_classify_anomaly_{metric}', key=f'data_anomaly_key_{metric}')
+    data = pd.DataFrame.from_dict(data, orient='index')
 
     if data[data.index == data.index.max()]["anomaly_low"][0] == True or data[data.index == data.index.max()]["anomaly_high"][0] == True:
       return f't5_gcs_create_store_visualization_{metric}'
@@ -134,6 +141,7 @@ with DAG(DAG_NAME,
 
     ti = kwargs['ti']
     data_anomaly = ti.xcom_pull(task_ids=f't3_classify_anomaly_{metric}', key=f'data_anomaly_key_{metric}')
+    data_anomaly = pd.DataFrame.from_dict(data_anomaly, orient='index')
 
     fig = px.line(
             data_anomaly,

@@ -1,6 +1,6 @@
 <mxfile host="65bd71144e">
     <diagram id="yQ1NKh-PU761OOfQEgjS" name="Page-1">
-        <mxGraphModel dx="652" dy="719" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
+        <mxGraphModel dx="1515" dy="1134" grid="1" gridSize="10" guides="1" tooltips="1" connect="1" arrows="1" fold="1" page="1" pageScale="1" pageWidth="1400" pageHeight="850" math="0" shadow="0">
             <root>
                 <mxCell id="0"/>
                 <mxCell id="1" parent="0"/>
@@ -98,22 +98,22 @@
                     <mxGeometry x="841" y="308" width="80" height="80" as="geometry"/>
                 </mxCell>
                 <mxCell id="52" value="metric" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="420" y="451" width="60" height="30" as="geometry"/>
+                    <mxGeometry x="420" y="444" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="53" value="metric" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="620" y="451" width="60" height="30" as="geometry"/>
+                    <mxGeometry x="612" y="444" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="54" value="metric&lt;br&gt;CHART_TITLE&lt;br&gt;BUCKET_ANOMALY&lt;br&gt;ANOMALY_IMAGE_NAME" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="1023.5" y="468" width="60" height="30" as="geometry"/>
+                    <mxGeometry x="1023.5" y="462" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="55" value="metric" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="890" y="353" width="60" height="30" as="geometry"/>
+                    <mxGeometry x="871" y="349" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="57" value="metric" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="810" y="451" width="60" height="30" as="geometry"/>
+                    <mxGeometry x="809" y="443" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="58" value="EMAIL_SUBJECT&lt;br&gt;BUCKET_ANOMALY&lt;br&gt;ANOMALY_IMAGE_NAME&lt;br&gt;IMG_NAME" style="text;html=1;strokeColor=none;fillColor=none;align=center;verticalAlign=middle;whiteSpace=wrap;rounded=0;fontSize=10;" parent="1" vertex="1">
-                    <mxGeometry x="1180" y="467" width="60" height="30" as="geometry"/>
+                    <mxGeometry x="1169" y="460" width="60" height="30" as="geometry"/>
                 </mxCell>
                 <mxCell id="61" value="..." style="shape=process;whiteSpace=wrap;html=1;backgroundOutline=1;fontSize=10;" parent="1" vertex="1">
                     <mxGeometry x="371.5" y="475" width="70" height="30" as="geometry"/>

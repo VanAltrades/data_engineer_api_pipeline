@@ -25,9 +25,9 @@ ANOM_EMAIL_FROM_PW = os.environ.get("ANOM_EMAIL_FROM_PW")
 # PRODUCTION
 ANOM_EMAIL_TO = os.environ.get("ANOM_EMAIL_TO")
 
-BUCKET_ANOMALY = 'anomaly_visualizations'
+BUCKET_ANOMALY = 'anom_visualizations'
 
-DATE_NAME = "date_key"
+DATE_NAME = "date"
 METRIC_NAME = "visits"
 THRESHOLD_LOW = 0.25
 THRESHOLD_HIGH = 0.75
@@ -45,17 +45,19 @@ default_args = {
     'depends_on_past': False,
     'email_on_failure': False,
     'email_on_retry': False,
-    'retries': 1,
+    'retries': 0,
     'start_date':  days_ago(1),
     'retry_delay': timedelta(minutes=5),
 }
 
 SQL = """
-      SELECT date_month, sum(visits) visits 
+      SELECT 
+      cast(date as STRING) as date, 
+      sum(visits) visits 
       FROM `e-commerce-demo-v.summary.s_ga_organic`
       WHERE date < "2017-12-31"
-      GROUP BY 1,2
-      ORDER BY 1 ASC
+      GROUP BY 1
+      ORDER BY 1 DESC
     """
 
 with DAG(DAG_NAME,
@@ -75,9 +77,10 @@ with DAG(DAG_NAME,
       bigquery_hook = BigQueryHook(bigquery_conn_id)
       # Execute the query and get the result as a Pandas DataFrame
       result = bigquery_hook.get_pandas_df(sql=SQL, dialect='standard')
-      
+    #   print(result)
+
       # Push the data to XCom
-      kwargs['ti'].xcom_push(key='bq_data_key', value=result)
+      kwargs['ti'].xcom_push(key='bq_data_key', value=result.to_dict(orient='index'))
 
   t1 = PythonOperator(
       task_id='t1_get_data_from_bq',
@@ -90,15 +93,20 @@ with DAG(DAG_NAME,
 
     ti = kwargs['ti']
     bq_data = ti.xcom_pull(task_ids='t1_get_data_from_bq', key='bq_data_key')
+    bq_data = pd.DataFrame.from_dict(bq_data, orient='index')
 
     data = bq_data[[DATE_NAME,METRIC_NAME]].copy()
     data[DATE_NAME] = pd.to_datetime(data[DATE_NAME], errors='coerce')
     # add name of day column
     data.loc[:,'day_name'] = data[DATE_NAME].dt.day_name()
     data[METRIC_NAME] = data[METRIC_NAME].astype('int64')
+    
+    # Convert datetime values to strings for xcom
+    data[DATE_NAME] = data[DATE_NAME].dt.strftime('%Y-%m-%d')
+
     # set timestamp to index
     data.set_index(DATE_NAME, drop=True, inplace=True)
-    kwargs['ti'].xcom_push(key='data_formated_key', value=data)
+    kwargs['ti'].xcom_push(key='data_formated_key', value=data.to_dict(orient='index'))
 
   t2 = PythonOperator(
       task_id='t2_format_data',
@@ -111,10 +119,11 @@ with DAG(DAG_NAME,
     
     ti = kwargs['ti']
     data = ti.xcom_pull(task_ids='t2_format_data', key='data_formated_key')
+    data = pd.DataFrame.from_dict(data,orient='index')
 
     # Set 15th Percentile threshold
-    data['quantile_0.25'] = data.groupby('day_name')['promo_orders'].transform(lambda x: x.quantile(THRESHOLD_LOW))
-    data['quantile_0.75'] = data.groupby('day_name')['promo_orders'].transform(lambda x: x.quantile(THRESHOLD_HIGH))
+    data['quantile_0.25'] = data.groupby('day_name')[METRIC_NAME].transform(lambda x: x.quantile(THRESHOLD_LOW))
+    data['quantile_0.75'] = data.groupby('day_name')[METRIC_NAME].transform(lambda x: x.quantile(THRESHOLD_HIGH))
     
     # Define a function to set the 'anomaly' columns
     def set_anomaly_low(row):
@@ -129,7 +138,7 @@ with DAG(DAG_NAME,
     data_anomaly = data.fillna(0)
     
     print(data_anomaly.head()) # LOG
-    kwargs['ti'].xcom_push(key='data_anomaly_key', value=data_anomaly)
+    kwargs['ti'].xcom_push(key='data_anomaly_key', value=data_anomaly.to_dict(orient='index'))
 
   t3 = PythonOperator(
       task_id='t3_classify_anomaly',        
@@ -142,6 +151,8 @@ with DAG(DAG_NAME,
 
     ti = kwargs['ti']
     data = ti.xcom_pull(task_ids='t3_classify_anomaly', key='data_anomaly_key')
+    data = pd.DataFrame.from_dict(data,orient='index')
+    print(data)
 
     if data[data.index == data.index.max()]["anomaly_low"][0] == True or data[data.index == data.index.max()]["anomaly_high"][0] == True:
       return True
@@ -158,6 +169,7 @@ with DAG(DAG_NAME,
 
     ti = kwargs['ti']
     data_anomaly = ti.xcom_pull(task_ids='t3_classify_anomaly', key='data_anomaly_key')
+    data_anomaly = pd.DataFrame.from_dict(data_anomaly,orient='index')
 
     fig = px.line(
             data_anomaly,
